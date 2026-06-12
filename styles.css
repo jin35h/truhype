@@ -722,17 +722,106 @@ header.scrolled {
   position: relative;
   overflow: hidden;
   aspect-ratio: 1 / 1.1;
-  background: #181818;
+  background: #121212;
+}
+
+/* Shimmer Skeleton Loader */
+.product-image-wrap::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #121212 25%, #222222 50%, #121212 75%);
+  background-size: 200% 100%;
+  animation: cardShimmer 1.5s infinite linear;
+  z-index: 1;
+  transition: opacity 0.4s ease;
+}
+
+.product-image-wrap.loaded::before {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@keyframes cardShimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Collections Loader Styles */
+.collections-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 0;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.collections-loader.fade-out {
+  opacity: 0;
+  transform: translateY(-20px);
+  pointer-events: none;
+}
+
+.loader-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 235, 0, 0.1);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spinLoader 1s infinite linear;
+  margin-bottom: 20px;
+  box-shadow: 0 0 15px var(--primary-glow);
+}
+
+.loader-text {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--primary);
+  letter-spacing: 0.05em;
+  animation: pulseText 1.5s infinite alternate ease-in-out;
+}
+
+@keyframes spinLoader {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes pulseText {
+  0% { opacity: 0.6; transform: scale(0.98); }
+  100% { opacity: 1; transform: scale(1.02); }
+}
+
+/* Progressive JS Fallback */
+body.js-active .products-grid {
+  opacity: 0;
+  pointer-events: none;
+}
+
+body.js-active .products-grid.grid-ready {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .product-image-wrap img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: var(--transition-slow);
+  opacity: 0;
+  transition: opacity 0.6s ease, transform var(--transition-slow);
+  z-index: 2;
 }
 
-.product-card:hover .product-image-wrap img {
+.product-image-wrap.loaded img {
+  opacity: 1;
+}
+
+.product-card:hover .product-image-wrap.loaded img {
   transform: scale(1.08);
 }
 

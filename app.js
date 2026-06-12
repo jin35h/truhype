@@ -3,6 +3,7 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+  initImageLoaders(); // Run first to setup JS fallback and loaders
   initScrollAnimations();
   initHeaderScroll();
   initMobileNav();
@@ -11,6 +12,58 @@ document.addEventListener('DOMContentLoaded', () => {
   initInquiryForm();
   initFAQAccordion();
 });
+
+/* ==========================================================================
+   Image Lazy Shimmer Loaders & Loader Block Control
+   ========================================================================== */
+function initImageLoaders() {
+  document.body.classList.add('js-active');
+  const images = document.querySelectorAll('.product-image-wrap img');
+  const loader = document.getElementById('collections-loader');
+  const grid = document.querySelector('.products-grid');
+  
+  let loadedCount = 0;
+  const totalImages = images.length;
+  
+  if (totalImages === 0) {
+    if (loader) loader.style.display = 'none';
+    if (grid) grid.classList.add('grid-ready');
+    return;
+  }
+  
+  function checkAllLoaded() {
+    loadedCount++;
+    if (loadedCount >= totalImages) {
+      if (loader) {
+        loader.classList.add('fade-out');
+        setTimeout(() => {
+          loader.style.display = 'none';
+          if (grid) grid.classList.add('grid-ready');
+        }, 400); // Wait for fade-out animation to complete
+      } else {
+        if (grid) grid.classList.add('grid-ready');
+      }
+    }
+  }
+
+  images.forEach(img => {
+    // Check if browser already has it cached
+    if (img.complete) {
+      img.parentElement.classList.add('loaded');
+      checkAllLoaded();
+    } else {
+      img.addEventListener('load', () => {
+        img.parentElement.classList.add('loaded');
+        checkAllLoaded();
+      });
+      img.addEventListener('error', () => {
+        // Complete load count even on error to prevent loader lock
+        img.parentElement.classList.add('loaded');
+        checkAllLoaded();
+      });
+    }
+  });
+}
 
 /* ==========================================================================
    Scroll-Triggered Reveal Animations
@@ -117,16 +170,18 @@ function initCategoryFilter() {
       const filterValue = btn.getAttribute('data-filter');
 
       productCards.forEach(card => {
+        const wrap = card.querySelector('.product-image-wrap');
+        
         // Quick exit for 'all'
         if (filterValue === 'all') {
-          animateCardShow(card);
+          animateCardShow(card, wrap);
           return;
         }
 
         // Match card categories
         const cardCategory = card.getAttribute('data-category');
         if (cardCategory === filterValue) {
-          animateCardShow(card);
+          animateCardShow(card, wrap);
         } else {
           animateCardHide(card);
         }
@@ -134,12 +189,23 @@ function initCategoryFilter() {
     });
   });
 
-  function animateCardShow(card) {
+  function animateCardShow(card, wrap) {
     card.style.display = 'flex';
+    
+    // Simulate loading shimmer transition on card reveal
+    if (wrap) {
+      wrap.classList.remove('loaded');
+    }
+    
     // Small delay to trigger CSS transition
     setTimeout(() => {
       card.style.opacity = '1';
       card.style.transform = 'scale(1)';
+      
+      // Complete loading transition
+      setTimeout(() => {
+        if (wrap) wrap.classList.add('loaded');
+      }, 350); // Shimmer duration
     }, 50);
   }
 
