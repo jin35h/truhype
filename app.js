@@ -227,9 +227,9 @@ function initStoreStatus() {
   if (!statusContainer) return;
 
   function updateStatus() {
-    // Store hours: 09:30 AM to 09:00 PM IST (Daily)
-    const openTimeMinutes = 9 * 60 + 30; // 9:30 AM = 570 mins
-    const closeTimeMinutes = 21 * 60;    // 9:00 PM = 1260 mins
+    // Store hours: 10:00 AM to 07:00 PM IST (Daily)
+    const openTimeMinutes = 10 * 60; // 10:00 AM = 600 mins
+    const closeTimeMinutes = 19 * 60; // 07:00 PM = 1140 mins
 
     // Get current Indian Standard Time (IST is Asia/Kolkata)
     const now = new Date();
@@ -262,14 +262,14 @@ function initStoreStatus() {
       statusContainer.innerHTML = `
         <span class="status-badge open">
           <span class="status-dot pulse"></span>
-          🟢 Open Now (Closes at 9:00 PM)
+          🟢 Open Now (Closes at 7:00 PM)
         </span>
       `;
     } else {
       statusContainer.innerHTML = `
         <span class="status-badge closed">
           <span class="status-dot"></span>
-          🔴 Closed Now (Opens at 9:30 AM)
+          🔴 Closed Now (Opens at 10:00 AM)
         </span>
       `;
     }
